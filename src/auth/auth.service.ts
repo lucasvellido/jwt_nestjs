@@ -6,33 +6,32 @@ import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
+  constructor(
+    private readonly userService: UsersService,
+    private readonly jwtService: JwtService,
+  ) {}
 
-    constructor(private readonly userService: UsersService, private readonly jwtService: JwtService) {}
+  login(user: any) {
+    const payload = { sub: user.id, email: user.email };
 
+    return {
+      token: this.jwtService.sign(payload),
+    };
+  }
 
-    login(user: any) {
-        const payload = { sub: user.id, email: user.email }
+  async validateUser(email: string, password: string) {
+    let user: UserEntity;
 
-        return {
-            token: this.jwtService.sign(payload)
-        }
+    try {
+      user = await this.userService.findOneOrFail({ email });
+    } catch (error) {
+      return null;
     }
 
+    const isPasswordValid = compareSync(password, user.password);
 
-    async validateUser(email: string, password: string) {
-        let user: UserEntity;
+    if (!isPasswordValid) return null;
 
-        try {
-            user = await this.userService.findOneOrFail({ email })
-        } catch (error) {
-            return null;
-        }
-
-        const isPasswordValid = compareSync(password, user.password)
-
-        if (!isPasswordValid) return null;
-
-        return user;
-    }
-
+    return user;
+  }
 }

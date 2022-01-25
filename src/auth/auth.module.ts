@@ -9,16 +9,16 @@ import { LocalStrategy } from './strategies/local.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
 
 @Module({
-    imports: [
-        UsersModule,
-        PassportModule,
-        ConfigModule.forRoot(),
-        JwtModule.register({
-            privateKey: process.env.JWT_SECRET_KEY, 
-            signOptions: { expiresIn: '60s' },
-        })
-    ],
+  imports: [
+    UsersModule,
+    PassportModule,
+    ConfigModule.forRoot(),
+    JwtModule.register({
+      privateKey: process.env.JWT_SECRET_KEY,
+      signOptions: { expiresIn: '60s' },
+    }),
+  ],
   providers: [AuthService, LocalStrategy, JwtStrategy],
-  controllers: [AuthController]
+  controllers: [AuthController],
 })
 export class AuthModule {}
